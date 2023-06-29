@@ -37,7 +37,6 @@ class StyleManager:
         self.style.configure("Header.TLabel",
                              anchor='center',
                              width=20,
-                             relief="ridge",
                              foreground="black",
                              padding=10,
                              background="lightgray")
@@ -94,7 +93,6 @@ class StyleManager:
         self.style.configure("Header.TLabel",
                              anchor='center',
                              width=20,
-                             relief="ridge",
                              foreground="lightgray",
                              padding=10,
                              background="#292b2f")

@@ -78,7 +78,7 @@ class ChartsViewPageWindow:
         header_view_head_window = self.canvas.create_window(self.smw.root.winfo_width() // 8, height, anchor=N,
                                                             window=self.header_view_head)
         self.smw.root.update()
-        height += self.header_view_head.winfo_height() + 10
+        height += 56
 
         self.header_view = ttk.Label(self.local_stack.get(),
                                      text=self.chart.get_header() if self.chart.get_header() else "-пусто-",
@@ -87,7 +87,7 @@ class ChartsViewPageWindow:
         header_view_window = self.canvas.create_window(self.smw.root.winfo_width() // 8, height, anchor=N,
                                                        window=self.header_view)
         self.smw.root.update()
-        height += self.header_view.winfo_height() + 10
+        height += 56
 
         self.node_text_label_head = ttk.Label(self.local_stack.get(),
                                               text=self.language.get_text('content'),
@@ -96,7 +96,7 @@ class ChartsViewPageWindow:
         node_text_label_head_window = self.canvas.create_window(self.smw.root.winfo_width() // 8, height, anchor=N,
                                                                 window=self.node_text_label_head)
         self.smw.root.update()
-        height += self.node_text_label_head.winfo_height() + 10
+        height += 56
 
         self.node_text_label = ttk.Label(self.local_stack.get(),
                                          text=self.chart.get_text() if self.chart.get_text() else "-пусто-",
