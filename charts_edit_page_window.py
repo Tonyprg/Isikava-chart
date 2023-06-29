@@ -102,9 +102,8 @@ class ChartsEditPageWindow:
                 style_btns[i].pack(padx=10, pady=10)
                 style_btns[i].configure(command=lambda i=i: self.set_style(style_btns[i]['text']))
 
-
             back = ttk.Button(self.local_stack.get(), text=self.language.get_text('back'), style="Btn.TButton")
-            back.configure(command=lambda: self.back())
+            back.configure(command=lambda: self.local_stack.pop())
             back.pack(padx=10, pady=10)
 
         def set_style(self, chart_style):
