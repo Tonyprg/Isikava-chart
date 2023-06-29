@@ -431,7 +431,11 @@ class Chart :
         self.mark.data.priority = priority
 
 
-    def set_style (self, style) :
+    def set_style (self, name_file) :
+        f = open("style/" + name_file, "r");
+        style = eval(f.read())
+        f.close()
+
         self.node_outline = style["outline"].copy()
         self.node_fill = style["node_fill"]
         self.mark_fill = style["mark_fill"]
@@ -451,15 +455,13 @@ if __name__ == "__main__" :
     root = tkinter.Tk()
     root.state("zoomed")
     crt = Chart(root)
-    crt.read_file("charts/Диаграмма")
+    # crt.read_file("charts/Диаграмма")
 
     tkinter.Button(root, text = "append", command = crt.append_node).pack()
     tkinter.Button(root, text = "remove", command = crt.remove_node).pack()
 
     tkinter.Button(root, text = "write_file", command = lambda: crt.write_file("charts/Диаграмма")).pack()
 
-    f = open("style/default", "r");
-    crt.set_style(eval(f.read()))
-    f.close()
+    crt.set_style("default")
 
     root.mainloop()

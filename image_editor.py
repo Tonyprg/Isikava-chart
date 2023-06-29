@@ -4,7 +4,8 @@ from PIL import Image, ImageTk, ImageDraw
 from tkinter import *
 from tkinter import filedialog
 from PIL import Image, ImageTk
-from PIL import ImageGrab
+# from PIL import ImageGrab
+import pyscreenshot as ImageGrab
 from tkinter import messagebox
 import math
 
