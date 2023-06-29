@@ -66,7 +66,7 @@ class Node :
                 "text"     : i.data.text,
                 "date"     : i.data.date,
                 "priority" : i.data.priority,
-                "image"    : i.image,
+                "image"    : i.data.image,
                 "path"     : i.path,
                 "index"    : i.index
             }
@@ -83,7 +83,7 @@ class Node :
             node.data.text     = data["text"]
             node.data.date     = data["date"]
             node.data.priority = data["priority"]
-            node.data.image         = data["image"]
+            node.data.image    = data["image"]
             node.path          = data["path"]
             node.index         = data["index"]
             self.insert(node.data, node.path, node.index)
@@ -341,7 +341,7 @@ class Chart :
             node.data.text     = data["text"]
             node.data.date     = data["date"]
             node.data.priority = data["priority"]
-            node.image         = data["image"]
+            node.data.image    = data["image"]
             node.path          = data["path"]
             node.index         = data["index"]
             if self.head == None :
@@ -469,7 +469,7 @@ if __name__ == "__main__" :
     root = tkinter.Tk()
     root.state("zoomed")
     crt = Chart(root)
-    # crt.read_file("charts/Диаграмма")
+    crt.read_file("charts/Диаграмма")
 
     tkinter.Button(root, text = "append", command = crt.append_node).pack()
     tkinter.Button(root, text = "remove", command = crt.remove_node).pack()
