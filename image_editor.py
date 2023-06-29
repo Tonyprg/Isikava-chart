@@ -13,11 +13,12 @@ from os import listdir
 from os.path import isfile, join
 
 class ImageEditor:
-    def __init__(self, master, smw, style, chart):
+    def __init__(self, master, smw, style, chart, language):
         self.master = master
         self.smw = smw
         self.style = style
         self.chart = chart
+        self.language = language
         self.chart_name = self.chart.name
         if not os.path.exists("photoes"):
             os.makedirs("photoes")
@@ -45,44 +46,51 @@ class ImageEditor:
         self.scale_factor = 1.0
         self.WIDTH=None
         self.HEIGHT=None
+        self.orig_image_for_scale=None
+        self.orig_image_for_scale_cropped=None
 
-        self.load_button = ttk.Button(self.control_frame, text="Загрузить изображение \n из буфера обмена",
+        self.load_button = ttk.Button(self.control_frame, text=self.language.get_text('bufer'),
                                      command=self.load_image, style="Btn.TButton")
         self.load_button.pack(anchor=tk.N,padx=10, pady=10)
 
-        self.shape_size_label = ttk.Label(self.control_frame, text="Размер:",style="Header.TLabel")
+        self.shape_size_label = ttk.Label(self.control_frame, text=self.language.get_text('size'),style="Header.TLabel")
         self.shape_size_label.pack(padx=10, pady=10, anchor=tk.N)
 
-        self.scale_button = ttk.Button(self.control_frame, text="Увеличить", command=self.scale_image_up,
+        self.scale_button = ttk.Button(self.control_frame, text=self.language.get_text('increase'), command=self.scale_image_up,
                                        style="Btn.TButton")
         self.scale_button.pack(padx=10, pady=10, anchor=tk.N)
 
-        self.scale_button2 = ttk.Button(self.control_frame, text="Уменьшить", command=self.scale_image_down,
+        self.scale_button2 = ttk.Button(self.control_frame, text=self.language.get_text('reduce'), command=self.scale_image_down,
                                         style="Btn.TButton")
         self.scale_button2.pack(padx=10, pady=10, anchor=tk.N)
 
-        self.shape_label = ttk.Label(self.control_frame, text="Выбрать форму обрезки:",
+        self.shape_label = ttk.Label(self.control_frame, text=self.language.get_text('select_crop'),
                                      style="Header.TLabel")
         self.shape_label.pack(padx=10, pady=10, anchor=tk.N)
 
         self.shape_frame = ttk.Frame(self.control_frame, style="Frame.TFrame")
         self.shape_frame.pack(padx=10, pady=10, anchor=tk.N)
 
-        self.circle_button = ttk.Button(self.shape_frame, text="Круг", command=self.crop_image_circle,
+        self.circle_button = ttk.Button(self.shape_frame, text=self.language.get_text('circle'), command=self.crop_image_circle,
                                         style="BtnSmall.TButton")
         self.circle_button.pack(side=tk.LEFT)
 
-        self.rectangle_button = ttk.Button(self.shape_frame, text="Прямоугольник", command=self.crop_image,
+        self.rectangle_button = ttk.Button(self.shape_frame, text=self.language.get_text('rectangle'), command=self.crop_image,
                                            style="BtnSmall.TButton")
         self.rectangle_button.pack(side=tk.LEFT)
 
-        self.save_button = ttk.Button(self.control_frame, text="Сохранить изменения", command=self.save_changes,
+        self.save_button = ttk.Button(self.control_frame, text=self.language.get_text('save'), command=self.save_changes,
                                       style="Btn.TButton")
         self.save_button.pack(padx=10, pady=10, anchor=tk.N)
 
+        self.back_button = ttk.Button(self.control_frame, text=self.language.get_text('back'),
+                                      command=self.smw.pop,
+                                      style="Btn.TButton")
+        self.back_button.pack(side=tk.BOTTOM, padx=10, pady=10, anchor=tk.N)
+
         self.control_frame.pack(side=tk.TOP, fill=tk.Y)
 
-        self.shape_size_label = ttk.Label(self.control_frame, text="Назад/Вперед:", style="Header.TLabel")
+        self.shape_size_label = ttk.Label(self.control_frame, text=self.language.get_text('back/forward'), style="Header.TLabel")
         self.shape_size_label.pack(padx=10, pady=10, anchor=tk.N)
 
         self.undo_button = ttk.Button(self.control_frame, text="<", command=self.undo_action, state=tk.DISABLED, style="BtnSmall.TButton")
@@ -199,7 +207,7 @@ class ImageEditor:
                 messagebox.showinfo("Внимание", "Выделенная область для обрезки слишком мала! Выделите еще раз")
                 self.image = self.return_image_back
                 self.show_image()
-                self.crop_image
+                self.crop_image()
                 
             else:
                 self.return_image_back = self.image

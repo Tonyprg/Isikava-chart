@@ -184,7 +184,7 @@ class ChartsEditPageWindow:
             self.local_stack.get().configure(style="SubMenu.TFrame")
             self.chart.field.canvas.unbind("<Double-ButtonPress-1>")
             self.chart.field.canvas.unbind("<Double-ButtonPress-3>")
-            image = image_editor.ImageEditor(self.local_stack.get(), self.local_stack, self.style, self.chart)
+            image = image_editor.ImageEditor(self.local_stack.get(), self.local_stack, self.style, self.chart, self.language)
             image.save_button.configure(command=lambda: self.save_image(image))
 
         def date_edit(self):
