@@ -13,12 +13,14 @@ class NodeData :
         self.text = None
         self.date = None
         self.priority = None
+        self.image = None
 
     def __str__ (self) :
         s = "header  : {},\n".format(self.header) + \
             "text    : {},\n".format(self.text) + \
             "date    : {},\n".format(self.date) + \
-            "priority: {} \n".format(self.priority)
+            "priority: {},\n".format(self.priority + \
+            "image   : {}")
         return s
 
     def copy (self) :
@@ -64,6 +66,7 @@ class Node :
                 "text"     : i.data.text,
                 "date"     : i.data.date,
                 "priority" : i.data.priority,
+                "image"    : i.image,
                 "path"     : i.path,
                 "index"    : i.index
             }
@@ -80,8 +83,9 @@ class Node :
             node.data.text     = data["text"]
             node.data.date     = data["date"]
             node.data.priority = data["priority"]
-            node.path = data["path"]
-            node.index = data["index"]
+            node.data.image         = data["image"]
+            node.path          = data["path"]
+            node.index         = data["index"]
             self.insert(node.data, node.path, node.index)
 
         file.close()
@@ -300,6 +304,7 @@ class Chart :
                 self.mark.data.text, i.data.text = i.data.text, self.mark.data.text
                 self.mark.data.date, i.data.date = i.data.date, self.mark.data.date
                 self.mark.data.priority, i.data.priority = i.data.priority, self.mark.data.priority
+                self.mark.data.image, i.data.image = i.data.image, self.mark.data.image
                 break
 
         self.field.redraw()
@@ -313,8 +318,9 @@ class Chart :
                 "text"     : i.data.text,
                 "date"     : i.data.date,
                 "priority" : i.data.priority,
+                "image"    : i.data.image,
                 "path"     : i.path,
-                "index"    : i.index
+                "index"    : i.index,
             }
             file.write(str(node) + "\n")
         file.close()
@@ -335,8 +341,9 @@ class Chart :
             node.data.text     = data["text"]
             node.data.date     = data["date"]
             node.data.priority = data["priority"]
-            node.path = data["path"]
-            node.index = data["index"]
+            node.image         = data["image"]
+            node.path          = data["path"]
+            node.index         = data["index"]
             if self.head == None :
                 self.head = node
             else :
@@ -348,7 +355,7 @@ class Chart :
             fill_color = self.node_fill)
 
         self.mark = self.head
-        self.mark.data.figure.func_draw.circle_fill = "blue"
+        self.mark.data.figure.func_draw.circle_fill = "aliceblue"
 
         self.field.figures = [i.data.figure for i in self.head]
         self.field.redraw()
@@ -413,6 +420,10 @@ class Chart :
         return self.mark.data.priority
 
 
+    def get_image (self) :
+        return self.mark.data.image
+
+
     def set_header (self, header) :
         self.mark.data.figure.circle.text = header
         self.mark.data.header = header
@@ -428,6 +439,10 @@ class Chart :
 
     def set_priority (self, priority) :
         self.mark.data.priority = priority
+
+
+    def set_image (self, image) :
+        self.mark.data.image = image
 
 
     def set_style (self, name_file) :
