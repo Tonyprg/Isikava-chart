@@ -43,7 +43,6 @@ class ChartsViewPageWindow:
         self.vbar.config(command=self.canvas.yview)
         self.canvas.config(width=self.smw.root.winfo_width()//4, height=self.smw.root.winfo_height())
         self.canvas.config(xscrollcommand=self.hbar.set, yscrollcommand=self.vbar.set)
-        self.canvas.bind_all("<MouseWheel>", self._on_mousewheel)
         self.canvas.pack(fill=tkinter.BOTH)
 
         self.local_stack = stack_menu.StackMenuWidget(self.right_frame)
@@ -52,9 +51,6 @@ class ChartsViewPageWindow:
         self.local_stack.stack.append(self.canvas)
 
         self.build()
-
-    def _on_mousewheel(self, event):
-        self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
 
     def update_view(self, event):
         self.chart.double_click_left(event)
