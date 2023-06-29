@@ -62,7 +62,6 @@ class LanguagesWindow():
         self.smw.push()
         language_window = LanguagesWindow(self.smw.get(), self.smw, self.style, self.language, self.settings_page, self.front_page)
 
-        self.front_page.team_name.configure(text=self.language.get_text('team_name'))
         self.front_page.charts_button.configure(text=self.language.get_text('to_choose_chart_btn'))
         self.front_page.settings_button.configure(text=self.language.get_text('to_settings_btn'))
         self.front_page.exit_button.configure(text=self.language.get_text('exit_btn'))

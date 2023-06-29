@@ -4,6 +4,7 @@ class StyleManager:
         self.style = ttk.Style()
         self.style.theme_use('clam')
         self.set_font("helvetica 14")
+        self.bg_color = '#292b2f'
     def set_font(self, font):
         self.style.configure(".",
                              font=font)
@@ -11,6 +12,7 @@ class StyleManager:
 
     def set_style_one(self):
         self.bg = 'bg_light.png'
+        self.bg_color = 'lightgray'
         self.style.configure("BG.TFrame",
                              foreground="black",
                              padding=10,
@@ -66,6 +68,7 @@ class StyleManager:
 
     def set_style_two(self):
         self.bg = 'bg_dark.png'
+        self.bg_color = '#292b2f'
         self.style.configure("BG.TFrame",
                              foreground="lightgray",
                              padding=10,
