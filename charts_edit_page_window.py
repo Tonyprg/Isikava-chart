@@ -210,7 +210,7 @@ class ChartsEditPageWindow:
 
         def save_header(self, insert):
             self.chart.set_header(insert.get())
-            self.chart.write_file('charts\\' + self.chart_name)
+            self.chart.write_file('charts/' + self.chart_name)
             self.local_stack.pop()
             self.chart.field.redraw()
 
@@ -219,20 +219,20 @@ class ChartsEditPageWindow:
         def save_text(self, edit):
             edit.back()
             self.chart.set_text(edit.get_text())
-            self.chart.write_file('charts\\' + self.chart_name)
+            self.chart.write_file('charts/' + self.chart_name)
 
 
 
         def save_date(self, edit):
             edit.back()
             self.chart.set_date(edit.get_date())
-            self.chart.write_file('charts\\' + self.chart_name)
+            self.chart.write_file('charts/' + self.chart_name)
 
 
 
         def save_priority(self, insert):
             self.chart.set_priority(insert.get())
-            self.chart.write_file('charts\\' + self.chart_name)
+            self.chart.write_file('charts/' + self.chart_name)
             self.local_stack.pop()
 
         def check_digit(self, P):
@@ -249,5 +249,5 @@ class ChartsEditPageWindow:
                 return False
 
         def back(self):
-            self.chart.write_file('charts\\' + self.chart_name)
+            self.chart.write_file('charts/' + self.chart_name)
             self.smw.pop()
