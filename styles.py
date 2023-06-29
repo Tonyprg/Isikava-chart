@@ -95,7 +95,7 @@ class StyleManager:
                              padding=10,
                              background="#292b2f")
         self.style.configure("Entry.TEntry",
-                             foreground="lightgray",
+                             foreground="black",
                              width=20,
                              padding=5,
                              background="#292b2f")
