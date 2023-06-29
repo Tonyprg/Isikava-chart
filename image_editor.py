@@ -8,6 +8,9 @@ from PIL import Image, ImageTk
 from PIL import ImageGrab
 from tkinter import messagebox
 import math
+import os
+from os import listdir
+from os.path import isfile, join
 
 class ImageEditor:
     def __init__(self, master, smw, style, chart):
@@ -16,7 +19,16 @@ class ImageEditor:
         self.style = style
         self.chart = chart
         self.chart_name = self.chart.name
-        self.mark_name = str(self.chart.mark.index)
+        if not os.path.exists("photoes"):
+            os.makedirs("photoes")
+        if not os.path.exists("photoes/"+self.chart_name):
+            os.makedirs("photoes/"+self.chart_name)
+        if not self.chart.get_image():
+            onlyfiles = listdir('photoes/'+self.chart_name+"/")
+            print(onlyfiles)
+            self.mark_name = "photoes"+"/"+self.chart_name+"/"+str(len(onlyfiles))
+        else:
+            self.mark_name = self.chart.get_image()
         self.image_frame = ttk.Frame(self.master, style="Container.TFrame")
         self.image_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
@@ -370,17 +382,17 @@ class ImageEditor:
     def save_changes(self):
         if self.image:
             try:
-                import os
                 if not os.path.exists("photoes"):
                     os.makedirs("photoes")
                 if not os.path.exists("photoes"+"/"+self.chart_name):
                     os.makedirs("photoes"+"/"+self.chart_name)
-                if not os.path.exists("photoes/"+self.chart_name+"/"+self.mark_name):
-                    os.makedirs("photoes/"+self.chart_name+"/"+self.mark_name)
-                self.default_image.save("photoes/"+self.chart_name+"/"+self.mark_name+"/"+"original.png")
+                if not os.path.exists(self.mark_name):
+                    os.makedirs(self.mark_name)
+                self.default_image.save(self.mark_name+"/"+"original.png")
                 if self.image:
-                    self.image.save("photoes/"+self.chart_name+"/"+self.mark_name+"/"+"edited.png")
+                    self.image.save(self.mark_name+"/"+"edited.png")
                     self.smw.pop()
+                self.chart.set_image(self.mark_name)
                 messagebox.showinfo("Успех", "Сохранение успешно выполнено!")
             except Exception as e:
                 messagebox.showerror("Ошибка", f"Не удалось сохранить изменения: {str(e)}")

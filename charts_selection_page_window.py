@@ -7,6 +7,7 @@ import styles
 import tree
 from PIL import Image, ImageTk
 import os
+import shutil
 
 class ChartsSelectionPageWindow:
     def __init__(self, master, smw, style, language):
@@ -94,6 +95,7 @@ class ChartsSelectionPageWindow:
             del self.chart_select[self.chart_select.index(cur_item['text'])]
             self.save()
             os.remove('charts/' + cur_item['text'])
+            shutil.rmtree('photoes/' + cur_item['text'])
 
     # добавление нового элемента
     def add(self):

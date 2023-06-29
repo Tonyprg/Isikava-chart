@@ -9,8 +9,10 @@ import image_editor
 import tree
 import datetime
 from PIL import Image, ImageTk
+import os
 from os import listdir
 from os.path import isfile, join
+import shutil
 
 class ChartsEditPageWindow:
         def __init__(self, master, smw, chart_name, style, language):
@@ -27,8 +29,7 @@ class ChartsEditPageWindow:
 
             self.chart = tree.Chart(self.left_frame, chart_name)
             self.chart.read_file('charts\\' + self.chart_name)
-            # for i in self.chart.mark: - обход по подузлам
-            # i.data.image - путь к i-тому пути
+
 
             if files.get_settings() and 'chart_style' in files.get_settings().keys():
                 chart_style = files.get_settings()['chart_style']
@@ -86,12 +87,18 @@ class ChartsEditPageWindow:
             self.add_node_button.pack(padx=10, pady=10)
 
             self.del_node_button = ttk.Button(self.chart_frame, text=self.language.get_text('del_node'),
-                                              command=self.chart.remove_node, style="Btn.TButton")
+                                              command=self.remove_node, style="Btn.TButton")
             self.del_node_button.pack(padx=10, pady=10)
 
             self.style_edit_button = ttk.Button(self.chart_frame, text=self.language.get_text('edit_chart_style'),
                                                 command=self.style_edit, style="Btn.TButton")
             self.style_edit_button.pack(padx=10, pady=10)
+
+        def remove_node(self):
+            for i in self.chart.mark:
+                if i.data.image and os.path.exists(i.data.image):
+                    shutil.rmtree(i.data.image)
+            self.chart.remove_node()
 
         def style_edit(self):
             self.local_stack.push()
@@ -238,6 +245,7 @@ class ChartsEditPageWindow:
 
         def save_image(self, edit):
             edit.save_changes()
+            self.chart.write_file('charts/' + self.chart_name)
             self.chart.field.canvas.bind("<Double-ButtonPress-1>", self.chart.double_click_left)
             self.chart.field.canvas.bind("<Double-ButtonPress-3>", self.chart.double_click_right)
 
