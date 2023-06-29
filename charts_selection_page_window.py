@@ -110,6 +110,8 @@ class ChartsSelectionPageWindow:
 
             self.chart_name_entry.delete(0, tkinter.END)
 
+            if not os.path.exists("charts"):
+                os.makedirs("charts")
             frm = ttk.Frame()
             chart = tree.Chart(frm, name=new_chart)
             chart.write_file('charts/'+new_chart)
