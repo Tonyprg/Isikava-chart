@@ -243,13 +243,13 @@ class Node :
 
 class Chart :
 
-
     def __init__ (self, root, name = "", width = 800, height = 500) :
         self.name = name
 
         self.node_outline = ["gray"]
         self.node_fill = "white"
-        self.mark_fill = "blue"
+        self.mark_fill = "aliceblue"
+        self.field_background = "white"
 
         self.head = Node(NodeData())
         self.head.create_figures(
@@ -259,7 +259,6 @@ class Chart :
         self.mark = self.head
         self.mark.data.figure.func_draw.circle_fill = self.mark_fill
 
-        self.field_background = "#FFE773"
         self.field = af.ActiveField(root, width, height,
                                     [i.data.figure for i in self.head],
                                     lambda event: self.double_click_left(event),
@@ -462,6 +461,6 @@ if __name__ == "__main__" :
 
     tkinter.Button(root, text = "write_file", command = lambda: crt.write_file("charts/Диаграмма")).pack()
 
-    crt.set_style("default")
+    crt.set_style("sunny")
 
     root.mainloop()
