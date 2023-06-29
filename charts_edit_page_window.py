@@ -9,6 +9,8 @@ import image_editor
 import tree
 import datetime
 from PIL import Image, ImageTk
+from os import listdir
+from os.path import isfile, join
 
 class ChartsEditPageWindow:
         def __init__(self, master, smw, chart_name, style, language):
@@ -25,6 +27,11 @@ class ChartsEditPageWindow:
 
             self.chart = tree.Chart(self.left_frame, chart_name)
             self.chart.read_file('charts\\' + self.chart_name)
+            if 'chart_style' in files.get_settings().keys():
+                chart_style = files.get_settings()['chart_style']
+            else:
+                chart_style = 'default'
+            self.chart.set_style(chart_style)
 
             self.back_button = ttk.Button(self.left_frame, text=self.language.get_text('back'), command=self.back, style="Btn.TButton")
             self.back_button.pack(side=tkinter.LEFT, anchor="sw", padx=10, pady=10)
@@ -86,6 +93,27 @@ class ChartsEditPageWindow:
         def style_edit(self):
             self.local_stack.push()
             self.local_stack.get().configure(style="SubMenu.TFrame")
+            header = ttk.Label(self.local_stack.get(), text=self.language.get_text('styles'), style="Header.TLabel")
+            header.pack(padx=10, pady=10)
+            onlyfiles = [f for f in listdir('style') if isfile(join('style', f))]
+            style_btns =[]
+            for i in range(len(onlyfiles)):
+                style_btns.append(ttk.Button(self.local_stack.get(), text=onlyfiles[i], style="Btn.TButton"))
+                style_btns[i].pack(padx=10, pady=10)
+                style_btns[i].configure(command=lambda i=i: self.set_style(style_btns[i]['text']))
+
+
+            back = ttk.Button(self.local_stack.get(), text=self.language.get_text('back'), style="Btn.TButton")
+            back.configure(command=lambda: self.back())
+            back.pack(padx=10, pady=10)
+
+        def set_style(self, chart_style):
+            self.chart.set_style(chart_style)
+            settings = files.get_settings()
+            if chart_style not in settings.keys():
+                settings['chart_style'] = chart_style
+            files.save_settings(settings)
+
 
         def head_edit(self):
             self.local_stack.push()

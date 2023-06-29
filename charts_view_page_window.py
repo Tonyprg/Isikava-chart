@@ -8,6 +8,7 @@ import tree
 import datetime
 from PIL import Image, ImageTk
 from textwrap import wrap
+import files
 
 class ChartsViewPageWindow:
     def __init__(self, master, smw, chart_name, style, language):
@@ -24,6 +25,11 @@ class ChartsViewPageWindow:
 
         self.chart = tree.Chart(self.left_frame, chart_name)
         self.chart.read_file('charts\\' + self.chart_name)
+        if 'chart_style' in files.get_settings().keys():
+            chart_style = files.get_settings()['chart_style']
+        else:
+            chart_style = 'default'
+        self.chart.set_style(chart_style)
 
         self.chart.field.canvas.bind("<Double-ButtonPress-1>", self.update_view)
 
@@ -43,6 +49,7 @@ class ChartsViewPageWindow:
         self.vbar.config(command=self.canvas.yview)
         self.canvas.config(width=self.smw.root.winfo_width()//4, height=self.smw.root.winfo_height())
         self.canvas.config(xscrollcommand=self.hbar.set, yscrollcommand=self.vbar.set)
+        self.canvas.bind_all("<MouseWheel>", self._on_mousewheel)
         self.canvas.pack(fill=tkinter.BOTH)
 
         self.local_stack = stack_menu.StackMenuWidget(self.right_frame)
@@ -51,6 +58,10 @@ class ChartsViewPageWindow:
         self.local_stack.stack.append(self.canvas)
 
         self.build()
+
+    def _on_mousewheel(self, event):
+        if event.x <= self.smw.root.winfo_width()//4:
+            self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
 
     def update_view(self, event):
         self.chart.double_click_left(event)
