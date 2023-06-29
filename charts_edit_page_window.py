@@ -27,7 +27,7 @@ class ChartsEditPageWindow:
 
             self.chart = tree.Chart(self.left_frame, chart_name)
             self.chart.read_file('charts\\' + self.chart_name)
-            if 'chart_style' in files.get_settings().keys():
+            if files.get_settings() and 'chart_style' in files.get_settings().keys():
                 chart_style = files.get_settings()['chart_style']
             else:
                 chart_style = 'default'
@@ -109,6 +109,8 @@ class ChartsEditPageWindow:
         def set_style(self, chart_style):
             self.chart.set_style(chart_style)
             settings = files.get_settings()
+            if not settings:
+                settings = dict()
             if chart_style not in settings.keys():
                 settings['chart_style'] = chart_style
             files.save_settings(settings)

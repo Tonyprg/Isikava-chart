@@ -25,7 +25,7 @@ class ChartsViewPageWindow:
 
         self.chart = tree.Chart(self.left_frame, chart_name)
         self.chart.read_file('charts\\' + self.chart_name)
-        if 'chart_style' in files.get_settings().keys():
+        if files.get_settings() and 'chart_style' in files.get_settings().keys():
             chart_style = files.get_settings()['chart_style']
         else:
             chart_style = 'default'
