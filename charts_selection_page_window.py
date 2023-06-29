@@ -93,7 +93,7 @@ class ChartsSelectionPageWindow:
             self.chart_selection_list.delete(self.chart_selection_list.selection()[0])
             del self.chart_select[self.chart_select.index(cur_item['text'])]
             self.save()
-            os.remove('charts\\' + cur_item['text'])
+            os.remove('charts/' + cur_item['text'])
 
     # добавление нового элемента
     def add(self):
@@ -110,9 +110,11 @@ class ChartsSelectionPageWindow:
 
             self.chart_name_entry.delete(0, tkinter.END)
 
-            f = open('charts\\' + new_chart, 'w+')
-            f.write(new_chart+'\n'+"{'header': None, 'text': None, 'date': None, 'priority': None, 'path': None, 'index': None}")
-            f.close()
+            frm = ttk.Frame()
+            chart = tree.Chart(frm, name=new_chart)
+            chart.write_file('charts/'+new_chart)
+            del chart
+            del frm
             if new_chart:
                 self.chart_selection_list.insert("", len(self.chart_select), text=new_chart)
                 self.chart_select.append(new_chart)

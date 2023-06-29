@@ -1,7 +1,6 @@
 import tkinter
 from tkinter import ttk
 from PIL import Image, ImageTk
-
 import files
 import stack_menu
 import settings_page_window as s
@@ -92,10 +91,11 @@ class FrontPageNameWindow():
 
 
 root = tkinter.Tk()
-root.geometry(str(root.winfo_screenwidth())+'x'+str(root.winfo_screenheight()))
-root.state('zoomed')
+root.geometry(str(int(root.winfo_screenwidth()*0.75))+'x'+str(int(root.winfo_screenheight()*0.75)))
 
 smw = stack_menu.StackMenuWidget(root)
 
 first_page = FrontPageNameWindow(root, smw)
 root.mainloop()
+
+#изменить сохранение картинок, изменить отображение картинки с изменённой на полную

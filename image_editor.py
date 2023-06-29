@@ -1,73 +1,83 @@
 import tkinter as tk
+from tkinter import ttk
 from tkinter import filedialog
 from PIL import Image, ImageTk, ImageDraw
 from tkinter import *
 from tkinter import filedialog
 from PIL import Image, ImageTk
-# from PIL import ImageGrab
-import pyscreenshot as ImageGrab
+from PIL import ImageGrab
 from tkinter import messagebox
 import math
 
 class ImageEditor:
-    def __init__(self, master, smw):
+    def __init__(self, master, smw, style, chart):
         self.master = master
         self.smw = smw
-        self.image_frame = tk.Frame(self.master)
-        self.image_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=False)
+        self.style = style
+        self.chart = chart
+        self.chart_name = self.chart.name
+        self.mark_name = str(self.chart.mark.index)
+        self.image_frame = ttk.Frame(self.master, style="Container.TFrame")
+        self.image_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
-        self.control_frame = tk.Frame(self.master)
-        self.control_frame.pack(side=tk.RIGHT, fill=tk.Y)
+        self.control_frame = ttk.Frame(self.master, style="Container.TFrame")
+        self.control_frame.pack(side=tk.RIGHT, fill=tk.Y, expand=True)
 
-        self.canvas = tk.Canvas(self.image_frame, width=600, height=600)
-        self.canvas.pack(fill=tk.BOTH, expand=False)
+        self.canvas = tk.Canvas(self.image_frame, bg=self.style.bg_color, width=600, height=600)
+        self.canvas.pack(expand=True)
 
         self.image = None
         self.image_path = None
         self.crop_rect = None
         self.crop_shape = "rectangle"
         self.scale_factor = 1.0
-        button_font = ("TkDefaultFont", 12)
         self.WIDTH=None
         self.HEIGHT=None
 
-        self.load_button = tk.Button(self.control_frame, text="Загрузить изображение \n из буфера обмена", command=self.load_image, font=button_font)
-        self.load_button.pack(anchor=tk.W)
+        self.load_button = ttk.Button(self.control_frame, text="Загрузить изображение \n из буфера обмена",
+                                     command=self.load_image, style="Btn.TButton")
+        self.load_button.pack(anchor=tk.N,padx=10, pady=10)
 
-        self.shape_size_label = tk.Label(self.control_frame, text="Размер:", font=button_font)
-        self.shape_size_label.pack(pady=10, anchor=tk.W)
+        self.shape_size_label = ttk.Label(self.control_frame, text="Размер:",style="Header.TLabel")
+        self.shape_size_label.pack(padx=10, pady=10, anchor=tk.N)
 
-        self.scale_button = tk.Button(self.control_frame, text="Увеличить", command=self.scale_image_up, font=button_font)
-        self.scale_button.pack(pady=10, anchor=tk.W)
+        self.scale_button = ttk.Button(self.control_frame, text="Увеличить", command=self.scale_image_up,
+                                       style="Btn.TButton")
+        self.scale_button.pack(padx=10, pady=10, anchor=tk.N)
 
-        self.scale_button2 = tk.Button(self.control_frame, text="Уменьшить", command=self.scale_image_down, font=button_font)
-        self.scale_button2.pack(pady=10, anchor=tk.W)
+        self.scale_button2 = ttk.Button(self.control_frame, text="Уменьшить", command=self.scale_image_down,
+                                        style="Btn.TButton")
+        self.scale_button2.pack(padx=10, pady=10, anchor=tk.N)
 
-        self.shape_label = tk.Label(self.control_frame, text="Выбрать форму обрезки:", font=button_font)
-        self.shape_label.pack(pady=10, anchor=tk.W)
+        self.shape_label = ttk.Label(self.control_frame, text="Выбрать форму обрезки:",
+                                     style="Header.TLabel")
+        self.shape_label.pack(padx=10, pady=10, anchor=tk.N)
 
-        self.shape_frame = tk.Frame(self.control_frame)
-        self.shape_frame.pack(pady=10, anchor=tk.W)
+        self.shape_frame = ttk.Frame(self.control_frame, style="Frame.TFrame")
+        self.shape_frame.pack(padx=10, pady=10, anchor=tk.N)
 
-        self.circle_button = tk.Button(self.shape_frame, text="Круг", command=self.crop_image_circle, font=button_font)
+        self.circle_button = ttk.Button(self.shape_frame, text="Круг", command=self.crop_image_circle,
+                                        style="BtnSmall.TButton")
         self.circle_button.pack(side=tk.LEFT)
 
-        self.rectangle_button = tk.Button(self.shape_frame, text="Прямоугольник", command=self.crop_image, font=button_font)
+        self.rectangle_button = ttk.Button(self.shape_frame, text="Прямоугольник", command=self.crop_image,
+                                           style="BtnSmall.TButton")
         self.rectangle_button.pack(side=tk.LEFT)
 
-        self.save_button = tk.Button(self.control_frame, text="Сохранить изменения", command=self.save_changes, font=button_font)
-        self.save_button.pack(pady=10, anchor=tk.W)
+        self.save_button = ttk.Button(self.control_frame, text="Сохранить изменения", command=self.save_changes,
+                                      style="Btn.TButton")
+        self.save_button.pack(padx=10, pady=10, anchor=tk.N)
 
         self.control_frame.pack(side=tk.TOP, fill=tk.Y)
 
-        self.shape_size_label = tk.Label(self.control_frame, text="Назад/Вперед:", font=button_font)
-        self.shape_size_label.pack(pady=10, anchor=tk.W)
+        self.shape_size_label = ttk.Label(self.control_frame, text="Назад/Вперед:", style="Header.TLabel")
+        self.shape_size_label.pack(padx=10, pady=10, anchor=tk.N)
 
-        self.undo_button = tk.Button(self.control_frame, text="<", command=self.undo_action, state=tk.DISABLED, font=button_font)
-        self.undo_button.pack(side=tk.LEFT, pady=10, anchor=tk.W)
+        self.undo_button = ttk.Button(self.control_frame, text="<", command=self.undo_action, state=tk.DISABLED, style="BtnSmall.TButton")
+        self.undo_button.pack(side=tk.LEFT, padx=10, pady=10, anchor=tk.N)
 
-        self.redo_button = tk.Button(self.control_frame, text=">", command=self.redo_action, state=tk.DISABLED, font=button_font)
-        self.redo_button.pack(side=tk.LEFT, pady=10, anchor=tk.W)
+        self.redo_button = ttk.Button(self.control_frame, text=">", command=self.redo_action, state=tk.DISABLED, style="BtnSmall.TButton")
+        self.redo_button.pack(side=tk.RIGHT, padx=10, pady=10, anchor=tk.N)
 
         self.image_up = 2
         self.image_down = 1
@@ -117,7 +127,7 @@ class ImageEditor:
     def show_image(self):
         self.canvas.delete("all")
         self.tk_image = ImageTk.PhotoImage(self.image)
-        self.canvas.create_image(0, 0, image=self.tk_image, anchor=tk.NW)
+        self.canvas.create_image(self.canvas.winfo_width()//2, self.canvas.winfo_height()//2, image=self.tk_image, anchor=tk.CENTER)
 
 
     def crop_image(self):
@@ -294,7 +304,7 @@ class ImageEditor:
                 messagebox.showinfo("Внимание", "Выделенная область для обрезки слишком мала! Выделите еще раз")
                 self.image = self.return_image_back
                 self.show_image()
-                self.crop_image
+                self.crop_image()
                 
             else:
                 self.return_image_back = self.image
@@ -354,8 +364,7 @@ class ImageEditor:
                     self.scale_factor_ud += self.scale_step_ud
                     
             self.update_undo_redo_buttons()
-       
-    
+
     
 
     def save_changes(self):
@@ -364,9 +373,13 @@ class ImageEditor:
                 import os
                 if not os.path.exists("photoes"):
                     os.makedirs("photoes")
-                self.default_image.save("photoes/original.png")
+                if not os.path.exists("photoes"+"/"+self.chart_name):
+                    os.makedirs("photoes"+"/"+self.chart_name)
+                if not os.path.exists("photoes/"+self.chart_name+"/"+self.mark_name):
+                    os.makedirs("photoes/"+self.chart_name+"/"+self.mark_name)
+                self.default_image.save("photoes/"+self.chart_name+"/"+self.mark_name+"/"+"original.png")
                 if self.image:
-                    self.image.save("photoes/edited.png")
+                    self.image.save("photoes/"+self.chart_name+"/"+self.mark_name+"/"+"edited.png")
                     self.smw.pop()
                 messagebox.showinfo("Успех", "Сохранение успешно выполнено!")
             except Exception as e:

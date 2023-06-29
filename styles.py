@@ -64,6 +64,15 @@ class StyleManager:
                              foreground="black",
                              padding=10,
                              background="white")
+        self.style.configure("BtnSmall.TButton",
+                             width=15,
+                             borderwidth=1,
+                             focusthickness=3,
+                             focuscolor='none',
+                             justify='center',
+                             foreground="black",
+                             padding=10,
+                             background="white")
 
     def set_style_two(self):
         self.bg = 'bg_dark.png'
@@ -113,6 +122,15 @@ class StyleManager:
                              background="#292b2f")
         self.style.configure("Btn.TButton",
                              width=20,
+                             borderwidth=1,
+                             focusthickness=3,
+                             focuscolor='none',
+                             justify='center',
+                             foreground="lightgray",
+                             padding=10,
+                             background="#292b2f")
+        self.style.configure("BtnSmall.TButton",
+                             width=15,
                              borderwidth=1,
                              focusthickness=3,
                              focuscolor='none',

@@ -38,7 +38,9 @@ class Language:
                 'edit_chart': 'Редактировать диаграмму',
                 'node': 'Узел',
                 'chart': 'Диаграмма',
-                'styles': 'Стили'
+                'styles': 'Стили',
+                'image': 'Изображение',
+                'empty': '-пусто-'
 
             },
             'english': {
@@ -77,7 +79,9 @@ class Language:
                 'edit_chart': 'Edit chart',
                 'node': 'Node',
                 'chart': 'Chart',
-                'styles': 'Styles'
+                'styles': 'Styles',
+                'image': 'Image',
+                'empty': '-empty-'
             }
         }
 

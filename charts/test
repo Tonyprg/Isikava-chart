@@ -3,3 +3,16 @@ test
 {'header': None, 'text': None, 'date': '05.08.2023', 'priority': '', 'path': [], 'index': 0}
 {'header': None, 'text': None, 'date': None, 'priority': None, 'path': [], 'index': 1}
 {'header': None, 'text': None, 'date': None, 'priority': None, 'path': [], 'index': 2}
+{'header': None, 'text': None, 'date': None, 'priority': None, 'path': [2], 'index': 0}
+{'header': None, 'text': None, 'date': None, 'priority': None, 'path': [2], 'index': 1}
+{'header': None, 'text': None, 'date': None, 'priority': None, 'path': [2], 'index': 2}
+{'header': None, 'text': None, 'date': None, 'priority': None, 'path': [2, 2], 'index': 0}
+{'header': None, 'text': None, 'date': None, 'priority': None, 'path': [2, 2, 0], 'index': 0}
+{'header': None, 'text': None, 'date': None, 'priority': None, 'path': [2, 2, 0, 0], 'index': 0}
+{'header': None, 'text': None, 'date': None, 'priority': None, 'path': [2, 2, 0, 0], 'index': 1}
+{'header': None, 'text': None, 'date': None, 'priority': None, 'path': [2, 2, 0, 0], 'index': 2}
+{'header': None, 'text': None, 'date': None, 'priority': None, 'path': [2, 2, 0, 0], 'index': 3}
+{'header': None, 'text': None, 'date': None, 'priority': None, 'path': [2, 2, 0, 0], 'index': 4}
+{'header': None, 'text': None, 'date': None, 'priority': None, 'path': [2, 2, 0, 0], 'index': 5}
+{'header': None, 'text': None, 'date': None, 'priority': None, 'path': [2, 2, 0, 0], 'index': 6}
+{'header': None, 'text': None, 'date': None, 'priority': None, 'path': [2], 'index': 3}

@@ -27,6 +27,9 @@ class ChartsEditPageWindow:
 
             self.chart = tree.Chart(self.left_frame, chart_name)
             self.chart.read_file('charts\\' + self.chart_name)
+            # for i in self.chart.mark: - обход по подузлам
+            # i.data.image - путь к i-тому пути
+
             if files.get_settings() and 'chart_style' in files.get_settings().keys():
                 chart_style = files.get_settings()['chart_style']
             else:
@@ -95,25 +98,45 @@ class ChartsEditPageWindow:
             self.local_stack.get().configure(style="SubMenu.TFrame")
             header = ttk.Label(self.local_stack.get(), text=self.language.get_text('styles'), style="Header.TLabel")
             header.pack(padx=10, pady=10)
+
+            self.list_frame = ttk.Frame(self.local_stack.get(), style="Container.TFrame")
+            self.list_frame.pack(fill=tkinter.X, padx=10, pady=10)
+
+            self.chart_selection_list_scrollbar = ttk.Scrollbar(self.list_frame, orient="vertical")
+
+            self.chart_selection_list = ttk.Treeview(self.list_frame,
+                                                     yscrollcommand=self.chart_selection_list_scrollbar.set,
+                                                     show="tree",
+                                                     style="Listbox.Treeview")
+            self.chart_selection_list.bind("<ButtonRelease>", self.set_style)
+
+            self.chart_selection_list_scrollbar.config(command=self.chart_selection_list.yview)
+
+            self.chart_select = []
             onlyfiles = [f for f in listdir('style') if isfile(join('style', f))]
-            style_btns =[]
-            for i in range(len(onlyfiles)):
-                style_btns.append(ttk.Button(self.local_stack.get(), text=onlyfiles[i], style="Btn.TButton"))
-                style_btns[i].pack(padx=10, pady=10)
-                style_btns[i].configure(command=lambda i=i: self.set_style(style_btns[i]['text']))
+            for element in onlyfiles:
+                if element:
+                    self.chart_selection_list.insert("", len(self.chart_select), text=element)
+                    self.chart_select.append(element)
+
+            self.chart_selection_list_scrollbar.pack(side=tkinter.RIGHT,fill=tkinter.Y)
+            self.chart_selection_list.pack(fill=tkinter.BOTH, expand=1)
 
             back = ttk.Button(self.local_stack.get(), text=self.language.get_text('back'), style="Btn.TButton")
             back.configure(command=lambda: self.local_stack.pop())
             back.pack(padx=10, pady=10)
 
-        def set_style(self, chart_style):
-            self.chart.set_style(chart_style)
-            settings = files.get_settings()
-            if not settings:
-                settings = dict()
-            if chart_style not in settings.keys():
-                settings['chart_style'] = chart_style
-            files.save_settings(settings)
+        def set_style(self, event):
+            chart_style = self.chart_selection_list.item(self.chart_selection_list.focus())
+            if chart_style['text']:
+                chart_style = chart_style['text']
+                self.chart.set_style(chart_style)
+                settings = files.get_settings()
+                if not settings:
+                    settings = dict()
+                if chart_style not in settings.keys():
+                    settings['chart_style'] = chart_style
+                files.save_settings(settings)
 
 
         def head_edit(self):
@@ -148,7 +171,7 @@ class ChartsEditPageWindow:
         def image_edit(self):
             self.local_stack.push()
             self.local_stack.get().configure(style="SubMenu.TFrame")
-            image = image_editor.ImageEditor(self.local_stack.get(), self.local_stack)
+            image = image_editor.ImageEditor(self.local_stack.get(), self.local_stack, self.style, self.chart)
 
         def date_edit(self):
             self.local_stack.push()

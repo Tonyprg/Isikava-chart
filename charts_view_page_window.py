@@ -9,6 +9,7 @@ import datetime
 from PIL import Image, ImageTk
 from textwrap import wrap
 import files
+import os
 
 class ChartsViewPageWindow:
     def __init__(self, master, smw, chart_name, style, language):
@@ -32,6 +33,7 @@ class ChartsViewPageWindow:
         self.chart.set_style(chart_style)
 
         self.chart.field.canvas.bind("<Double-ButtonPress-1>", self.update_view)
+        self.chart.field.canvas.unbind("<Double-ButtonPress-3>")
 
         self.back_button = ttk.Button(self.left_frame, text=self.language.get_text('back'), command=self.back, style="Btn.TButton")
         self.back_button.pack(side=tkinter.BOTTOM, anchor="sw", padx=10, pady=10)
@@ -81,7 +83,7 @@ class ChartsViewPageWindow:
         height += 56
 
         self.header_view = ttk.Label(self.local_stack.get(),
-                                     text=self.chart.get_header() if self.chart.get_header() else "-пусто-",
+                                     text=self.chart.get_header() if self.chart.get_header() else self.language.get_text('empty'),
                                      style="Text.TLabel")
         self.header_view.pack(padx=10, pady=10, fill=tkinter.X)
         header_view_window = self.canvas.create_window(self.smw.root.winfo_width() // 8, height, anchor=N,
@@ -99,7 +101,7 @@ class ChartsViewPageWindow:
         height += 56
 
         self.node_text_label = ttk.Label(self.local_stack.get(),
-                                         text=self.chart.get_text() if self.chart.get_text() else "-пусто-",
+                                         text=self.chart.get_text() if self.chart.get_text() else self.language.get_text('empty'),
                                          style="Text.TLabel")  # text (откуда брать текст)
         self.node_text_label.pack(padx=10, pady=10, fill=tkinter.X)
         self.smw.root.update()
@@ -114,12 +116,35 @@ class ChartsViewPageWindow:
         self.smw.root.update()
         height += self.node_text_label.winfo_height() + 10
 
-        # self.edited_image = PhotoImage(file="photoes/edited.png").subsample(3)  # cropped image (откуда брать и куда оно должно сохраняться)
-        #
-        # self.view = ttk.Label(self.local_stack.get(),
-        #                       image=self.edited_image,
-        #                       style="Image.TLabel")
-        # self.view.pack(padx=10, pady=10, fill=tkinter.X)
+        self.original_image_head = ttk.Label(self.local_stack.get(),
+                                              text=self.language.get_text('image'),
+                                              style="Header.TLabel")  # text (откуда брать текст)
+        self.original_image_head.pack(fill=tkinter.X)
+        node_text_label_head_window = self.canvas.create_window(self.smw.root.winfo_width() // 8, height, anchor=N,
+                                                                window=self.original_image_head)
+        self.smw.root.update()
+        height += 56
+
+        if os.path.exists("photoes/" + self.chart_name + "/" + str(self.chart.mark.index) + "/" + "original.png"):
+            self.original_image = PhotoImage(file="photoes/"+self.chart_name+"/"+str(self.chart.mark.index)+"/"+"original.png").subsample(8)
+
+            self.original_image_view = ttk.Label(self.local_stack.get(),
+                                  image=self.original_image,
+                                  style="Image.TLabel")
+            self.original_image_view.pack(padx=10, pady=10, fill=tkinter.X)
+            node_text_label_head_window = self.canvas.create_window(self.smw.root.winfo_width() // 8, height, anchor=N,
+                                                                    window=self.original_image_view)
+            self.smw.root.update()
+            height += 135
+        else:
+            self.original_image_view = ttk.Label(self.local_stack.get(),
+                                               text=self.language.get_text('empty'),
+                                               style="Image.TLabel")
+            self.original_image_view.pack(padx=10, pady=10, fill=tkinter.X)
+            node_text_label_head_window = self.canvas.create_window(self.smw.root.winfo_width() // 8, height, anchor=N,
+                                                                    window=self.original_image_view)
+            self.smw.root.update()
+            height += 56
 
         # self.original_image = PhotoImage(self.oringinal_image.resize(), file="photoes/original.png").subsample(3)
         # self.view = ttk.Label(self.local_stack.get(), image=self.original_image, style="Image.TLabel")
@@ -162,7 +187,7 @@ class ChartsViewPageWindow:
                 date = ''
 
         self.header_date = ttk.Label(self.local_stack.get(),
-                                     text=date if date else "-пусто-",
+                                     text=date if date else self.language.get_text('empty'),
                                      style="Text.TLabel")  # date (откуда брать дату)
         self.header_date.pack(padx=10, pady=10, fill=tkinter.X)
         header_date_window = self.canvas.create_window(self.smw.root.winfo_width() // 8, height, anchor=N,
@@ -180,7 +205,7 @@ class ChartsViewPageWindow:
         height += 56
 
         self.header_priority = ttk.Label(self.local_stack.get(),
-                                         text=self.chart.get_priority() if self.chart.get_priority() else "-пусто-",
+                                         text=self.chart.get_priority() if self.chart.get_priority() else self.language.get_text('empty'),
                                          style="Text.TLabel")  # priority (диаграммы еще нет)
         self.header_priority.pack(padx=10, pady=10)
         header_priority_window = self.canvas.create_window(self.smw.root.winfo_width() // 8, height, anchor=N,
