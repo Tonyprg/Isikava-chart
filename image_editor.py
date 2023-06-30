@@ -35,7 +35,7 @@ class ImageEditor:
         self.control_frame = ttk.Frame(self.master, style="Container.TFrame")
         self.control_frame.pack(side=tk.RIGHT, fill=tk.Y, expand=True)
 
-        self.canvas = tk.Canvas(self.image_frame, bg=self.style.bg_color, width=600, height=600)
+        self.canvas = tk.Canvas(self.image_frame, bg=self.style.bg_color)
         self.canvas.pack(expand=True)
 
         self.image = None
@@ -130,9 +130,9 @@ class ImageEditor:
                         self.WIDTH = int(self.WIDTH * self.scale_factor)
                         self.HEIGHT = int(self.HEIGHT * self.scale_factor)
                         self.image = self.image.resize((self.WIDTH, self.HEIGHT))
-                        
-                        self.show_image()
+
                         self.image = self.image
+                self.show_image()
                     
                         
             ## wight- 1620  *  height -  2160
@@ -146,6 +146,8 @@ class ImageEditor:
     def show_image(self):
         self.canvas.delete("all")
         self.tk_image = ImageTk.PhotoImage(self.image)
+        self.canvas.configure(width=self.tk_image.width(), height=self.tk_image.height())
+        self.smw.root.update()
         self.canvas.create_image(self.canvas.winfo_width()//2, self.canvas.winfo_height()//2, image=self.tk_image, anchor=tk.CENTER)
 
 
@@ -202,7 +204,7 @@ class ImageEditor:
             self.show_image()
             self.update_undo_redo_buttons()
 
-            if self.image.width < 200 or self.image.height < 150:
+            if self.image.width < 100 or self.image.height < 75:
                 messagebox.showinfo("Внимание", "Выделенная область для обрезки слишком мала! Выделите еще раз")
                 self.image = self.return_image_back
                 self.show_image()
@@ -319,7 +321,7 @@ class ImageEditor:
             self.show_image()
             self.update_undo_redo_buttons()
 
-            if self.image.width < 200 or self.image.height < 150:
+            if self.image.width < 100 or self.image.height < 75:
                 messagebox.showinfo("Внимание", "Выделенная область для обрезки слишком мала! Выделите еще раз")
                 self.image = self.return_image_back
                 self.show_image()
