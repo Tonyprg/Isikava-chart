@@ -101,6 +101,7 @@ class Circle (Figure) :
     def __init__ (self, points) :
         super().__init__(points)
         self.text = ""
+        self.image = None
 
     def radius (self) :
         points = self.get_transform_points()
@@ -120,6 +121,8 @@ class Circle (Figure) :
             fill = fill)
         fnt = font.Font(size = math.ceil(r / 4))
         canvas.create_text((x, y), text = self.text, font = fnt)
+
+    def draw_with_text (self, canvas, width = 1, outline = "black", fill = "white") :
 
 
 class Rectangle (Figure) :
