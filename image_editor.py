@@ -26,7 +26,6 @@ class ImageEditor:
             os.makedirs("photoes/"+self.chart_name)
         if not self.chart.get_image():
             onlyfiles = listdir('photoes/'+self.chart_name+"/")
-            print(onlyfiles)
             self.mark_name = "photoes"+"/"+self.chart_name+"/"+str(len(onlyfiles))
         else:
             self.mark_name = self.chart.get_image()

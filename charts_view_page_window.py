@@ -28,10 +28,14 @@ class ChartsViewPageWindow:
         self.chart = tree.Chart(self.left_frame, chart_name)
         if os.path.exists('charts/' + self.chart_name):
             self.chart.read_file('charts/' + self.chart_name)
+        else:
+            file = open('charts/' + self.chart_name, "w")
+            file.close()
+            self.chart.write_file('charts/' + self.chart_name)
         if files.get_settings() and 'chart_style' in files.get_settings().keys():
             chart_style = files.get_settings()['chart_style']
         else:
-            chart_style = 'default'
+            chart_style = 'default style'
         self.chart.set_style(chart_style)
 
         self.chart.field.canvas.bind("<Double-ButtonPress-1>", self.update_view)
