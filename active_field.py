@@ -2,6 +2,8 @@ import tkinter
 from tkinter import font
 import numpy
 import math
+from PIL import Image
+from PIL import ImageTk
 
 # -------------------------   ActiveFiled    ------------------------
 
@@ -101,13 +103,30 @@ class Circle (Figure) :
     def __init__ (self, points) :
         super().__init__(points)
         self.text = ""
+
+        self.path_image = None
         self.image = None
 
     def radius (self) :
         points = self.get_transform_points()
         return Line(points).length()
 
-    def draw (self, canvas, width = 1, outline = "black", fill = "white") :
+    # def draw (self, canvas, width = 1, outline = "black", fill = "white") :
+    #     a, b = self.get_transform_points()
+    #     x, y = a
+    #     r = math.sqrt(
+    #         (a[0] - b[0]) * (a[0] - b[0]) +
+    #         (a[1] - b[1]) * (a[1] - b[1]))
+    #     canvas.create_oval(
+    #         x - r, y - r,
+    #         x + r, y + r,
+    #         width = width,
+    #         outline = outline,
+    #         fill = fill)
+    #     fnt = font.Font(size = math.ceil(r / 4))
+    #     canvas.create_text((x, y), text = self.text, font = fnt)
+
+    def draw_with_text (self, canvas, width = 1, outline = "black", fill = "white") :
         a, b = self.get_transform_points()
         x, y = a
         r = math.sqrt(
@@ -122,7 +141,44 @@ class Circle (Figure) :
         fnt = font.Font(size = math.ceil(r / 4))
         canvas.create_text((x, y), text = self.text, font = fnt)
 
-    def draw_with_text (self, canvas, width = 1, outline = "black", fill = "white") :
+    def draw_with_image (self, canvas, width = 1, outline = "black", fill = "white") :
+        a, b = self.get_transform_points()
+        x, y = a
+        r = math.sqrt(
+            (a[0] - b[0]) * (a[0] - b[0]) +
+            (a[1] - b[1]) * (a[1] - b[1]))
+        canvas.create_oval(
+            x - r, y - r,
+            x + r, y + r,
+            width = width,
+            outline = outline,
+            fill = fill)
+        fnt = font.Font(size = math.ceil(r / 4))
+
+        if self.path_image and not self.image :
+            self.image = Image.open(self.path_image)
+            # if self.image :
+            #     print("Ok")
+            # else :
+            #     print("Not opening")
+
+        if self.image :
+
+#                 # Изображение
+#                 chart = Image.open("edited.png")
+#                 rchart = chart.resize((d, d))
+#                 # image = ImageTk.PhotoImage(rchart)
+
+#                 canvas.create_image(WIDTH / 2, HEIGHT / 2, image = ImageTk.PhotoImage(rchart))
+
+            print(self.path_image)
+            d = math.ceil(2 * r)
+            resize_image = self.image.resize((d, d))
+            photo = ImageTk.PhotoImage(resize_image)
+            canvas.create_image(x, y, image = photo)
+        else :
+            canvas.create_text((x, y), text = "IMAGE", font = fnt)
+
 
 
 class Rectangle (Figure) :
@@ -312,18 +368,22 @@ class FuncDraw :
         self.tail_width = (3 - depth) * 2
         self.tail_fill = "black"
 
+
     def set_depth (self, depth) :
+
         if depth < 3 :
             self.left_line_width  = (3 - depth) * 2
             self.circle_width     = (3 - depth) * 2
             self.right_line_width = (3 - depth) * 2
             self.tail_width       = (3 - depth) * 2
 
+
     def set_width (self, width) :
         self.left_line_width  = width
         self.circle_width     = width
         self.right_line_width = width
         self.tail_width       = width
+
 
     def set_outline (self, color) :
         self.left_line_fill = color
@@ -333,14 +393,22 @@ class FuncDraw :
 
         
     def draw (self, canvas) :
+
+        if self.node_figure.circle.path_image :
+            self.node_figure.circle.draw_with_image(canvas,
+                width   = self.circle_width,
+                outline = self.ciecle_outline,
+                fill    = self.circle_fill)
+        else :
+            self.node_figure.circle.draw_with_text(canvas,
+                width   = self.circle_width,
+                outline = self.ciecle_outline,
+                fill    = self.circle_fill)
+
         if (self.type == "node") :
             self.node_figure.left_line.draw(canvas,
                 width = self.left_line_width,
                 fill  = self.left_line_fill)
-            self.node_figure.circle.draw(canvas,
-                width   = self.circle_width,
-                outline = self.ciecle_outline,
-                fill    = self.circle_fill)
             self.node_figure.right_line.draw(canvas,
                 width = self.right_line_width,
                 fill  = self.right_line_fill)
@@ -348,10 +416,6 @@ class FuncDraw :
                 width = self.tail_width,
                 fill  = self.tail_fill)
         elif (self.type == "root") :
-            self.node_figure.circle.draw(canvas,
-                width   = self.circle_width,
-                outline = self.ciecle_outline,
-                fill    = self.circle_fill)
             self.node_figure.right_line.draw(canvas,
                 width = self.right_line_width,
                 fill  = self.right_line_fill)
@@ -362,12 +426,3 @@ class FuncDraw :
             self.node_figure.left_line.draw(canvas,
                 width = self.left_line_width,
                 fill  = self.left_line_fill)
-            self.node_figure.circle.draw(canvas,
-                width   = self.circle_width,
-                outline = self.ciecle_outline,
-                fill    = self.circle_fill)
-        elif (self.type == "root_leaf") :
-            self.node_figure.circle.draw(canvas,
-                width   = self.circle_width,
-                outline = self.ciecle_outline,
-                fill    = self.circle_fill)

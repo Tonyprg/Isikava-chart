@@ -1,7 +1,5 @@
 import math
 import tkinter
-import random
-
 import active_field as af
 
 class NodeData :
@@ -443,6 +441,7 @@ class Chart :
 
     def set_image (self, image) :
         self.mark.data.image = image
+        self.mark.data.figure.circle.path_image = image + "/edited.png"
 
 
     def set_style (self, name_file) :
@@ -469,7 +468,7 @@ if __name__ == "__main__" :
     root = tkinter.Tk()
     root.state("zoomed")
     crt = Chart(root)
-    crt.read_file("charts/Диаграмма")
+    crt.read_file("charts/asdf")
 
     tkinter.Button(root, text = "append", command = crt.append_node).pack()
     tkinter.Button(root, text = "remove", command = crt.remove_node).pack()
