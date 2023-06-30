@@ -99,4 +99,4 @@ smw = stack_menu.StackMenuWidget(root)
 first_page = FrontPageNameWindow(root, smw)
 root.mainloop()
 
-#изменить сохранение картинок, заблокировать смену узлов при редактировании узла
+#стили привязываются к конкретной диаграмме, два скриншота в презентацию

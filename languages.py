@@ -48,7 +48,8 @@ class Language:
                 'select_crop': 'Выбрать форму обрезки',
                 'circle': "Круг",
                 'rectangle': 'Прямоугольник',
-                'back/forward': 'Назад/Вперёд'
+                'back/forward': 'Назад/Вперёд',
+                'crop': 'Обрезать'
 
             },
             'english': {
@@ -97,7 +98,8 @@ class Language:
                 'select_crop': 'Select crop form',
                 'circle': "Circle",
                 'rectangle': 'Rectangle',
-                'back/forward': 'Back/Forward'
+                'back/forward': 'Back/Forward',
+                'crop': 'Crop'
             }
         }
 
