@@ -35,13 +35,6 @@ class ChartsEditPageWindow:
                 file.close()
                 self.chart.write_file('charts/' + self.chart_name)
 
-
-            if files.get_settings() and 'chart_style' in files.get_settings().keys() and os.path.exists('style/' + files.get_settings()['chart_style']):
-                chart_style = files.get_settings()['chart_style']
-            else:
-                chart_style = 'default style'
-            self.chart.set_style(chart_style)
-
             self.back_button = ttk.Button(self.left_frame, text=self.language.get_text('back'), command=self.back, style="Btn.TButton")
             self.back_button.pack(side=tkinter.LEFT, anchor="sw", padx=10, pady=10)
 
@@ -146,15 +139,9 @@ class ChartsEditPageWindow:
 
         def set_style(self, event):
             chart_style = self.chart_selection_list.item(self.chart_selection_list.focus())
-            if chart_style['text']:
+            if chart_style['text'] and os.path.exists('style/'+chart_style['text']):
                 chart_style = chart_style['text']
                 self.chart.set_style(chart_style)
-                settings = files.get_settings()
-                if not settings:
-                    settings = dict()
-                if chart_style not in settings.keys():
-                    settings['chart_style'] = chart_style
-                files.save_settings(settings)
 
 
         def head_edit(self):
