@@ -20,6 +20,7 @@ class ChartsViewPageWindow:
         self.language = language
 
         self.smw.get().configure(style="BG.TFrame")
+        self.smw.get().bind('<Configure>', self.on_resize)
 
         self.left_frame = ttk.Frame(self.smw.get(), style="Container.TFrame")
         self.left_frame.pack(side=tkinter.LEFT, fill=tkinter.BOTH, expand=True)
@@ -41,8 +42,7 @@ class ChartsViewPageWindow:
         self.right_frame = ttk.Frame(self.smw.get(), style="Container.TFrame", width=self.smw.root.winfo_width()//4)
         self.right_frame.pack(side=tkinter.LEFT, fill=tkinter.BOTH, expand=False)
 
-        self.canvas = Canvas(self.right_frame, bg=self.style.bg_color, width=self.smw.root.winfo_width()//4, height=self.smw.root.winfo_height(),
-                             scrollregion=(0, 0, self.smw.root.winfo_width()//4, self.smw.root.winfo_height()))
+        self.canvas = Canvas(self.right_frame, bg=self.style.bg_color, width=self.smw.root.winfo_width()//4, height=self.smw.root.winfo_height())
         self.hbar = Scrollbar(self.right_frame, orient=HORIZONTAL)
         self.hbar.pack(side=BOTTOM, fill=X)
         self.hbar.config(command=self.canvas.xview)
@@ -52,7 +52,7 @@ class ChartsViewPageWindow:
         self.canvas.config(width=self.smw.root.winfo_width()//4, height=self.smw.root.winfo_height())
         self.canvas.config(xscrollcommand=self.hbar.set, yscrollcommand=self.vbar.set)
         self.canvas.bind_all("<MouseWheel>", self._on_mousewheel)
-        self.canvas.pack(fill=tkinter.BOTH)
+        self.canvas.pack(anchor='n', fill=tkinter.BOTH)
 
         self.local_stack = stack_menu.StackMenuWidget(self.right_frame)
         self.local_stack.get().configure(style="SubMenu.TFrame")
@@ -61,6 +61,9 @@ class ChartsViewPageWindow:
 
         self.build()
 
+    def on_resize(self, event):
+        self.smw.root.update()
+        self.canvas.configure(height=self.smw.root.winfo_height())
     def _on_mousewheel(self, event):
         if event.x <= self.smw.root.winfo_width()//4:
             self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
@@ -68,10 +71,11 @@ class ChartsViewPageWindow:
     def update_view(self, event):
         self.chart.double_click_left(event)
         self.canvas.delete('all')
-
+        self.smw.root.update()
         self.build()
 
     def build(self):
+        self.smw.root.update()
         height = 10
         self.header_view_head = ttk.Label(self.local_stack.get(),
                                           text=self.language.get_text('header'),
@@ -125,8 +129,17 @@ class ChartsViewPageWindow:
         self.smw.root.update()
         height += 56
 
-        if os.path.exists("photoes/" + self.chart_name + "/" + str(self.chart.mark.index) + "/" + "original.png"):
-            self.original_image = PhotoImage(file="photoes/"+self.chart_name+"/"+str(self.chart.mark.index)+"/"+"original.png").subsample(8)
+        if self.chart.get_image() and os.path.exists(self.chart.get_image()):
+            im = Image.open(self.chart.get_image() + "/" + "original.png")
+            width, img_height = im.size
+            if width >= self.smw.root.winfo_width()//4:
+                i = 1
+                while width / i > self.smw.root.winfo_width()//4:
+                    i += 1
+                sub = i
+            else:
+                sub = 2
+            self.original_image = PhotoImage(file=self.chart.get_image() + "/" + "original.png").subsample(sub)
 
             self.original_image_view = ttk.Label(self.local_stack.get(),
                                   image=self.original_image,
@@ -135,7 +148,7 @@ class ChartsViewPageWindow:
             node_text_label_head_window = self.canvas.create_window(self.smw.root.winfo_width() // 8, height, anchor=N,
                                                                     window=self.original_image_view)
             self.smw.root.update()
-            height += 135
+            height += self.original_image.height() + 10
         else:
             self.original_image_view = ttk.Label(self.local_stack.get(),
                                                text=self.language.get_text('empty'),
@@ -145,10 +158,6 @@ class ChartsViewPageWindow:
                                                                     window=self.original_image_view)
             self.smw.root.update()
             height += 56
-
-        # self.original_image = PhotoImage(self.oringinal_image.resize(), file="photoes/original.png").subsample(3)
-        # self.view = ttk.Label(self.local_stack.get(), image=self.original_image, style="Image.TLabel")
-        # self.view.pack()
 
         self.header_date_head = ttk.Label(self.local_stack.get(),
                                           text=self.language.get_text('date'),
@@ -213,7 +222,8 @@ class ChartsViewPageWindow:
         self.smw.root.update()
         height += 56
 
-        self.canvas.configure(scrollregion=(0, 0, self.canvas.winfo_width(), height + 100))
+        self.canvas.yview_moveto(0)
+        self.canvas.configure(scrollregion=(0, 0, self.canvas.winfo_width(), height))
 
     def back(self):
         self.smw.pop()

@@ -9,8 +9,10 @@ import image_editor
 import tree
 import datetime
 from PIL import Image, ImageTk
+import os
 from os import listdir
 from os.path import isfile, join
+import shutil
 
 class ChartsEditPageWindow:
         def __init__(self, master, smw, chart_name, style, language):
@@ -27,8 +29,7 @@ class ChartsEditPageWindow:
 
             self.chart = tree.Chart(self.left_frame, chart_name)
             self.chart.read_file('charts\\' + self.chart_name)
-            # for i in self.chart.mark: - обход по подузлам
-            # i.data.image - путь к i-тому пути
+
 
             if files.get_settings() and 'chart_style' in files.get_settings().keys():
                 chart_style = files.get_settings()['chart_style']
@@ -86,12 +87,18 @@ class ChartsEditPageWindow:
             self.add_node_button.pack(padx=10, pady=10)
 
             self.del_node_button = ttk.Button(self.chart_frame, text=self.language.get_text('del_node'),
-                                              command=self.chart.remove_node, style="Btn.TButton")
+                                              command=self.remove_node, style="Btn.TButton")
             self.del_node_button.pack(padx=10, pady=10)
 
             self.style_edit_button = ttk.Button(self.chart_frame, text=self.language.get_text('edit_chart_style'),
                                                 command=self.style_edit, style="Btn.TButton")
             self.style_edit_button.pack(padx=10, pady=10)
+
+        def remove_node(self):
+            for i in self.chart.mark:
+                if i.data.image and os.path.exists(i.data.image):
+                    shutil.rmtree(i.data.image)
+            self.chart.remove_node()
 
         def style_edit(self):
             self.local_stack.push()
@@ -142,6 +149,8 @@ class ChartsEditPageWindow:
         def head_edit(self):
             self.local_stack.push()
             self.local_stack.get().configure(style="SubMenu.TFrame")
+            self.chart.field.canvas.unbind("<Double-ButtonPress-1>")
+            self.chart.field.canvas.unbind("<Double-ButtonPress-3>")
 
             header = ttk.Label(self.local_stack.get(), text=self.language.get_text('header'), style="Header.TLabel")
             header.pack(padx=10, pady=10)
@@ -162,6 +171,8 @@ class ChartsEditPageWindow:
         def text_edit(self):
             self.local_stack.push()
             self.local_stack.get().configure(style="SubMenu.TFrame")
+            self.chart.field.canvas.unbind("<Double-ButtonPress-1>")
+            self.chart.field.canvas.unbind("<Double-ButtonPress-3>")
             edit = editable_text_with_header.EditableTextWithHeader(self.local_stack.get(),
                                                                     self.chart.get_text() if self.chart.get_text() else "",
                                                                     self.language.get_text('content'), self.local_stack,
@@ -171,11 +182,16 @@ class ChartsEditPageWindow:
         def image_edit(self):
             self.local_stack.push()
             self.local_stack.get().configure(style="SubMenu.TFrame")
-            image = image_editor.ImageEditor(self.local_stack.get(), self.local_stack, self.style, self.chart)
+            self.chart.field.canvas.unbind("<Double-ButtonPress-1>")
+            self.chart.field.canvas.unbind("<Double-ButtonPress-3>")
+            image = image_editor.ImageEditor(self.local_stack.get(), self.local_stack, self.style, self.chart, self.language)
+            image.save_button.configure(command=lambda: self.save_image(image))
 
         def date_edit(self):
             self.local_stack.push()
             self.local_stack.get().configure(style="SubMenu.TFrame")
+            self.chart.field.canvas.unbind("<Double-ButtonPress-1>")
+            self.chart.field.canvas.unbind("<Double-ButtonPress-3>")
             if self.language.language == 'english':
                 today = str(datetime.date.today().month) + '/' + str(datetime.date.today().day) + '/' + str(datetime.date.today().year)
             elif self.language.language == 'russian':
@@ -191,7 +207,8 @@ class ChartsEditPageWindow:
         def priority_edit(self):
             self.local_stack.push()
             self.local_stack.get().configure(style="SubMenu.TFrame")
-
+            self.chart.field.canvas.unbind("<Double-ButtonPress-1>")
+            self.chart.field.canvas.unbind("<Double-ButtonPress-3>")
             header = ttk.Label(self.local_stack.get(), text=self.language.get_text('priority'), style="Header.TLabel")
             header.pack(padx=10, pady=10)
 
@@ -213,6 +230,9 @@ class ChartsEditPageWindow:
             self.chart.write_file('charts/' + self.chart_name)
             self.local_stack.pop()
             self.chart.field.redraw()
+            self.chart.field.canvas.bind("<Double-ButtonPress-1>", self.chart.double_click_left)
+            self.chart.field.canvas.bind("<Double-ButtonPress-3>", self.chart.double_click_right)
+
 
 
 
@@ -220,13 +240,22 @@ class ChartsEditPageWindow:
             edit.back()
             self.chart.set_text(edit.get_text())
             self.chart.write_file('charts/' + self.chart_name)
+            self.chart.field.canvas.bind("<Double-ButtonPress-1>", self.chart.double_click_left)
+            self.chart.field.canvas.bind("<Double-ButtonPress-3>", self.chart.double_click_right)
 
+        def save_image(self, edit):
+            edit.save_changes()
+            self.chart.write_file('charts/' + self.chart_name)
+            self.chart.field.canvas.bind("<Double-ButtonPress-1>", self.chart.double_click_left)
+            self.chart.field.canvas.bind("<Double-ButtonPress-3>", self.chart.double_click_right)
 
 
         def save_date(self, edit):
             edit.back()
             self.chart.set_date(edit.get_date())
             self.chart.write_file('charts/' + self.chart_name)
+            self.chart.field.canvas.bind("<Double-ButtonPress-1>", self.chart.double_click_left)
+            self.chart.field.canvas.bind("<Double-ButtonPress-3>", self.chart.double_click_right)
 
 
 
@@ -234,6 +263,8 @@ class ChartsEditPageWindow:
             self.chart.set_priority(insert.get())
             self.chart.write_file('charts/' + self.chart_name)
             self.local_stack.pop()
+            self.chart.field.canvas.bind("<Double-ButtonPress-1>", self.chart.double_click_left)
+            self.chart.field.canvas.bind("<Double-ButtonPress-3>", self.chart.double_click_right)
 
         def check_digit(self, P):
             if str.isdigit(P) or P == "":

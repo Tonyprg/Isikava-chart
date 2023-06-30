@@ -40,7 +40,15 @@ class Language:
                 'chart': 'Диаграмма',
                 'styles': 'Стили',
                 'image': 'Изображение',
-                'empty': '-пусто-'
+                'empty': '-пусто-',
+                'bufer': 'Загрузить изображение\nиз буфера обмена',
+                'size': 'Размер',
+                'increase': 'Увеличить',
+                'reduce': 'Уменьшить',
+                'select_crop': 'Выбрать форму обрезки',
+                'circle': "Круг",
+                'rectangle': 'Прямоугольник',
+                'back/forward': 'Назад/Вперёд'
 
             },
             'english': {
@@ -81,7 +89,15 @@ class Language:
                 'chart': 'Chart',
                 'styles': 'Styles',
                 'image': 'Image',
-                'empty': '-empty-'
+                'empty': '-empty-',
+                'bufer': 'Load image\nfrom clipboard',
+                'size': 'Size',
+                'increase': 'Increase',
+                'reduce': 'Reduce',
+                'select_crop': 'Select crop form',
+                'circle': "Circle",
+                'rectangle': 'Rectangle',
+                'back/forward': 'Back/Forward'
             }
         }
 
