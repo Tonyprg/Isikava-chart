@@ -91,6 +91,7 @@ class FrontPageNameWindow():
 
 
 root = tkinter.Tk()
+root.title('')
 root.geometry(str(int(root.winfo_screenwidth()*0.75))+'x'+str(int(root.winfo_screenheight()*0.75)))
 
 smw = stack_menu.StackMenuWidget(root)
