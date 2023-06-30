@@ -32,7 +32,7 @@ class ChartsViewPageWindow:
             file = open('charts/' + self.chart_name, "w")
             file.close()
             self.chart.write_file('charts/' + self.chart_name)
-        if files.get_settings() and 'chart_style' in files.get_settings().keys():
+        if files.get_settings() and 'chart_style' in files.get_settings().keys() and os.path.exists('style/' + files.get_settings()['chart_style']):
             chart_style = files.get_settings()['chart_style']
         else:
             chart_style = 'default style'
