@@ -1,6 +1,6 @@
 {
     "outline": ["gray"],
-    "node_fill": "#840794",
+    "node_fill": "white",
     "mark_fill": "aliceblue",
     "background": "white"
 }
