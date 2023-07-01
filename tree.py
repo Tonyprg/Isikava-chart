@@ -1,6 +1,8 @@
 import math
 import tkinter
 import active_field as af
+from PIL import Image
+from PIL import ImageTk
 
 class NodeData :
 
@@ -84,6 +86,7 @@ class Node :
             node.data.image    = data["image"]
             node.path          = data["path"]
             node.index         = data["index"]
+
             self.insert(node.data, node.path, node.index)
 
         file.close()
@@ -127,13 +130,23 @@ class Node :
                               colors = ["black"],
                               fill_color = "white") :
 
+        """ Функция создает все фигуры с нуля. Не учитывая помеченный узел.
+        Тоесть каждая фигура помима структуры имеет еще цвета внешней линии,
+        заполнение, что является отличительным признаком между обычным и поме -
+        ченным узлом. Функция же создает все фигуры обычными. Среди них нет
+        помеченной фигуры """
+
         stack = [(0, self)]
         while (stack != []) :
             depth, node = stack.pop()
             node.data.figure = figure.copy()
-            # отобразить текст на узле
+            # отобразить текст на узле, или изображение
             if node.data.header :
                 node.data.figure.circle.text = node.data.header
+
+                if not node.data.figure.circle.image :
+                    node.data.figure.circle.image = \
+                        Image.open(node.data.image + "/edited.png")
 
             # определение типа узла
             if node.parent == None and node.child == [] :
@@ -144,9 +157,12 @@ class Node :
                 node.data.figure.func_draw.type = "leaf"
 
             # Цвет узлов и ребер и ширина ребер
+            node.data.figure.func_draw.tail_depth = depth
             node.data.figure.func_draw.set_depth(depth)
             node.data.figure.func_draw.circle_fill = fill_color
-            node.data.figure.func_draw.set_outline(colors[min(depth, len(colors) - 1)])
+            node.data.figure.func_draw.set_outline(
+                colors[min(depth, len(colors) - 1)],
+                colors[min(depth + 1, len(colors) - 1)])
 
             for i in node.child :
                 stack.append((depth + 1, i))
@@ -237,8 +253,7 @@ class Node :
             px, py = p
             p = px + (dx - cx) / af.Line((c, d)).length() * af.Line((p, q)).length(), \
                 py + (dy - cy) / af.Line((c, d)).length() * af.Line((p, q)).length()
-
-            self.data.figure.tail = af.Line((d, p))
+            self.data.figure.tail = af.Line((c, p))
 
         return step, width, height
 
@@ -259,6 +274,7 @@ class Chart :
             fill_color = self.node_fill)
 
         self.mark = self.head
+        self.mark.data.figure.func_draw.mark = True
         self.mark.data.figure.func_draw.circle_fill = self.mark_fill
 
         self.field = af.ActiveField(root, width, height,
@@ -268,6 +284,55 @@ class Chart :
                                     background = self.field_background)
 
 
+    def redraw (self) :
+
+        """ Попытка получить все фигуры из self.head на первый
+        взгляд кажется нормальной, ведь все фигуры уже настроены. Но,
+        код self.field.redraw() будет работать корректно только в том слу
+        чае, если self.figure и self.mark согласованы. Отслеживать этот момент
+        сложно, лучше просто написать функцию, которая сначала установит
+        согласованность а потом уже перерисует все фигуры """
+
+        # С нуля создаем фигуры
+        if self.head.data.figure :
+            self.head.create_figures(
+                self.head.data.figure,
+                colors = self.node_outline,
+                fill_color = self.node_fill)
+        else :
+            self.head.create_figures(
+                colors = self.node_outline,
+                fill_color = self.node_fill)
+
+        # # Устанавливаем согласованность (подсвеченные узлы будут
+        # # соответствовать помеченному узлу)
+        # self.mark.data.figure.func_draw.mark = True
+        # self.mark.data.figure.func_draw.circle_fill = self.mark_fill
+
+        node = self.mark
+        while node :
+
+            if node.parent :
+                parent = node.parent
+                # необходимые данные
+                a, b = parent.data.figure.tail.get_transform_points()
+                (ax, ay), (bx, by) = a, b
+                s, _ = node.data.figure.left_line.get_transform_points()
+                k = af.Line((a, s)).length() / af.Line((a, b)).length()
+                parent.data.figure.func_draw.tail_ksep = k
+
+            node.data.figure.func_draw.set_depth(0)
+            length = len(self.node_outline)
+            node.data.figure.func_draw.set_outline(
+                self.node_outline[min(0, length - 1)],
+                self.node_outline[min(1, length - 1)])
+            node.data.figure.func_draw.mark = True
+            node.data.figure.func_draw.circle_fill = self.mark_fill
+            node = node.parent
+
+        self.field.figures = [i.data.figure for i in self.head]
+        self.field.redraw()
+
     def double_click_left (self, event) :
 
         for i in self.head :
@@ -276,17 +341,10 @@ class Chart :
             r = i.data.figure.circle.radius()
 
             if (event.x - px) ** 2 + (event.y - py) ** 2 < r * r:
-                if self.mark == i :
-                    break
-
-                self.mark.data.figure.func_draw.circle_fill = self.node_fill
-
                 self.mark = i
-                self.mark.data.figure.func_draw.circle_fill = self.mark_fill
-
                 break
 
-        self.field.redraw()
+        self.redraw()
 
     def double_click_right (self, event) :
 
@@ -303,9 +361,10 @@ class Chart :
                 self.mark.data.date, i.data.date = i.data.date, self.mark.data.date
                 self.mark.data.priority, i.data.priority = i.data.priority, self.mark.data.priority
                 self.mark.data.image, i.data.image = i.data.image, self.mark.data.image
+                self.mark.data.figure.circle.image, i.data.figure.circle.image =  \
+                    i.data.figure.circle.image, self.mark.data.figure.circle.image
                 break
-
-        self.field.redraw()
+        self.redraw()
 
     def write_file (self, file_name) :
         file = open(file_name, "w")
@@ -342,21 +401,16 @@ class Chart :
             node.data.image    = data["image"]
             node.path          = data["path"]
             node.index         = data["index"]
+
             if self.head == None :
                 self.head = node
             else :
                 self.head.insert(node.data, node.path, node.index)
+
         file.close()
 
-        self.head.create_figures(
-            colors = self.node_outline,
-            fill_color = self.node_fill)
-
         self.mark = self.head
-        self.mark.data.figure.func_draw.circle_fill = "aliceblue"
-
-        self.field.figures = [i.data.figure for i in self.head]
-        self.field.redraw()
+        self.redraw()
 
 
     def append_node (self) :
@@ -370,15 +424,7 @@ class Chart :
             self.head.insert(NodeData(), path, len(self.mark.child))
 
         self.head.data.figure.remove_tail()
-        self.head.create_figures(
-            self.head.data.figure,
-            colors = self.node_outline,
-            fill_color = self.node_fill)
-
-        self.mark.data.figure.func_draw.circle_fill = self.mark_fill
-        
-        self.field.figures = [i.data.figure for i in self.head]
-        self.field.redraw()
+        self.redraw()
 
 
     def remove_node (self) :
@@ -387,19 +433,15 @@ class Chart :
         if self.mark == self.head :
             return None
 
+        parent = self.mark.parent
         self.head.delete(self.mark.path, self.mark.index)
+        self.mark = parent
 
-        self.head.data.figure.remove_tail()
-        self.head.create_figures(
-            self.head.data.figure,
-            colors = self.node_outline,
-            fill_color = self.node_fill)
+        self.redraw()
 
-        self.mark = self.head
-        self.mark.data.figure.func_draw.circle_fill = self.mark_fill
 
-        self.field.figures = [i.data.figure for i in self.head]
-        self.field.redraw()
+    def switch_mark (self, new_mark) :
+        if new_mark == mark : return None
 
 
     def get_header (self) :
@@ -441,7 +483,10 @@ class Chart :
 
     def set_image (self, image) :
         self.mark.data.image = image
-        self.mark.data.figure.circle.path_image = image + "/edited.png"
+        try :
+            self.mark.data.figure.circle.image = \
+                Image.open(self.mark.data.image + "/edited.png")
+        except : pass
 
 
     def set_style (self, name_file) :
@@ -457,10 +502,8 @@ class Chart :
             self.head.data.figure,
             colors = self.node_outline,
             fill_color = self.node_fill)
-        self.mark.data.figure.func_draw.circle_fill = self.mark_fill
-        self.field.figures = [i.data.figure for i in self.head]
         self.field.background = self.field_background
-        self.field.redraw()
+        self.redraw()
 
 
 if __name__ == "__main__" :
