@@ -269,6 +269,7 @@ class Chart :
         self.node_fill = "white"
         self.mark_fill = "aliceblue"
         self.field_background = "white"
+        self.style = "default style"
 
         self.head = Node(NodeData())
         self.head.create_figures(
@@ -284,6 +285,8 @@ class Chart :
                                     lambda event: self.double_click_left(event),
                                     lambda event: self.double_click_right(event),
                                     background = self.field_background)
+
+        self.set_style(self.style)
 
 
     def redraw (self) :
@@ -371,6 +374,7 @@ class Chart :
     def write_file (self, file_name) :
         file = open(file_name, "w")
         file.write(self.name + "\n")
+        file.write(self.style + "\n")
         for i in self.head :
             node = {
                 "header"   : i.data.header,
@@ -389,10 +393,15 @@ class Chart :
         self.head = None
         file = open(file_name, "r")
         read_name = False
+        read_style = False
         for i in file :
             if not read_name :
                 self.name = i[:-1]
                 read_name = True
+                continue
+            if not read_style :
+                self.style = i[:-1]
+                read_style = True
                 continue
             data = eval(i)
             node = Node(NodeData())
@@ -413,6 +422,7 @@ class Chart :
 
         self.mark = self.head
         self.redraw()
+        self.set_style(self.style)
 
 
     def append_node (self) :
@@ -492,6 +502,7 @@ class Chart :
 
 
     def set_style (self, name_file) :
+        self.style = name_file
         f = open("style/" + name_file, "r");
         style = eval(f.read())
         f.close()
