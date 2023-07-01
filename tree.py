@@ -140,13 +140,15 @@ class Node :
         while (stack != []) :
             depth, node = stack.pop()
             node.data.figure = figure.copy()
+
             # отобразить текст на узле, или изображение
             if node.data.header :
                 node.data.figure.circle.text = node.data.header
-
-                if not node.data.figure.circle.image :
+            if not node.data.figure.circle.image :
+                try :
                     node.data.figure.circle.image = \
                         Image.open(node.data.image + "/edited.png")
+                except : pass
 
             # определение типа узла
             if node.parent == None and node.child == [] :

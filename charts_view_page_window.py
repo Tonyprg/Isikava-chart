@@ -26,12 +26,12 @@ class ChartsViewPageWindow:
         self.left_frame.pack(side=tkinter.LEFT, fill=tkinter.BOTH, expand=True)
 
         self.chart = tree.Chart(self.left_frame, chart_name)
-        self.chart.read_file('charts/' + self.chart_name)
-        if files.get_settings() and 'chart_style' in files.get_settings().keys():
-            chart_style = files.get_settings()['chart_style']
+        if os.path.exists('charts/' + self.chart_name):
+            self.chart.read_file('charts/' + self.chart_name)
         else:
-            chart_style = 'default'
-        self.chart.set_style(chart_style)
+            file = open('charts/' + self.chart_name, "w")
+            file.close()
+            self.chart.write_file('charts/' + self.chart_name)
 
         self.chart.field.canvas.bind("<Double-ButtonPress-1>", self.update_view)
         self.chart.field.canvas.unbind("<Double-ButtonPress-3>")

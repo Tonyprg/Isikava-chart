@@ -103,6 +103,7 @@ class Circle (Figure) :
     def __init__ (self, points) :
         super().__init__(points)
         self.text = ""
+        self.image = None
 
         self.image = None
         self.rimage = None
@@ -111,21 +112,6 @@ class Circle (Figure) :
     def radius (self) :
         points = self.get_transform_points()
         return Line(points).length()
-
-    # def draw (self, canvas, width = 1, outline = "black", fill = "white") :
-    #     a, b = self.get_transform_points()
-    #     x, y = a
-    #     r = math.sqrt(
-    #         (a[0] - b[0]) * (a[0] - b[0]) +
-    #         (a[1] - b[1]) * (a[1] - b[1]))
-    #     canvas.create_oval(
-    #         x - r, y - r,
-    #         x + r, y + r,
-    #         width = width,
-    #         outline = outline,
-    #         fill = fill)
-    #     fnt = font.Font(size = math.ceil(r / 4))
-    #     canvas.create_text((x, y), text = self.text, font = fnt)
 
     def draw_with_text (self, canvas, width = 1, outline = "black", fill = "white") :
         a, b = self.get_transform_points()

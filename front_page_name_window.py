@@ -91,6 +91,7 @@ class FrontPageNameWindow():
 
 
 root = tkinter.Tk()
+root.title('')
 root.geometry(str(int(root.winfo_screenwidth()*0.75))+'x'+str(int(root.winfo_screenheight()*0.75)))
 
 smw = stack_menu.StackMenuWidget(root)
@@ -98,4 +99,4 @@ smw = stack_menu.StackMenuWidget(root)
 first_page = FrontPageNameWindow(root, smw)
 root.mainloop()
 
-#изменить сохранение картинок, заблокировать смену узлов при редактировании узла
+#стили привязываются к конкретной диаграмме, два скриншота в презентацию

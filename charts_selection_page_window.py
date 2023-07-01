@@ -94,8 +94,10 @@ class ChartsSelectionPageWindow:
             self.chart_selection_list.delete(self.chart_selection_list.selection()[0])
             del self.chart_select[self.chart_select.index(cur_item['text'])]
             self.save()
-            os.remove('charts/' + cur_item['text'])
-            shutil.rmtree('photoes/' + cur_item['text'])
+            if os.path.exists('charts/' + cur_item['text']):
+                os.remove('charts/' + cur_item['text'])
+            if os.path.exists('photoes/' + cur_item['text']):
+                shutil.rmtree('photoes/' + cur_item['text'])
 
     # добавление нового элемента
     def add(self):

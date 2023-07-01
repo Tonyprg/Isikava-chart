@@ -26,7 +26,6 @@ class ImageEditor:
             os.makedirs("photoes/"+self.chart_name)
         if not self.chart.get_image():
             onlyfiles = listdir('photoes/'+self.chart_name+"/")
-            print(onlyfiles)
             self.mark_name = "photoes"+"/"+self.chart_name+"/"+str(len(onlyfiles))
         else:
             self.mark_name = self.chart.get_image()
@@ -36,7 +35,7 @@ class ImageEditor:
         self.control_frame = ttk.Frame(self.master, style="Container.TFrame")
         self.control_frame.pack(side=tk.RIGHT, fill=tk.Y, expand=True)
 
-        self.canvas = tk.Canvas(self.image_frame, bg=self.style.bg_color, width=600, height=600)
+        self.canvas = tk.Canvas(self.image_frame, bg=self.style.bg_color)
         self.canvas.pack(expand=True)
 
         self.image = None
@@ -64,20 +63,16 @@ class ImageEditor:
                                         style="Btn.TButton")
         self.scale_button2.pack(padx=10, pady=10, anchor=tk.N)
 
-        self.shape_label = ttk.Label(self.control_frame, text=self.language.get_text('select_crop'),
+        self.shape_label = ttk.Label(self.control_frame, text=self.language.get_text('crop'),
                                      style="Header.TLabel")
         self.shape_label.pack(padx=10, pady=10, anchor=tk.N)
 
         self.shape_frame = ttk.Frame(self.control_frame, style="Frame.TFrame")
         self.shape_frame.pack(padx=10, pady=10, anchor=tk.N)
 
-        self.circle_button = ttk.Button(self.shape_frame, text=self.language.get_text('circle'), command=self.crop_image_circle,
+        self.circle_button = ttk.Button(self.shape_frame, text=self.language.get_text('crop'), command=self.crop_image_circle,
                                         style="BtnSmall.TButton")
         self.circle_button.pack(side=tk.LEFT)
-
-        self.rectangle_button = ttk.Button(self.shape_frame, text=self.language.get_text('rectangle'), command=self.crop_image,
-                                           style="BtnSmall.TButton")
-        self.rectangle_button.pack(side=tk.LEFT)
 
         self.save_button = ttk.Button(self.control_frame, text=self.language.get_text('save'), command=self.save_changes,
                                       style="Btn.TButton")
@@ -112,6 +107,9 @@ class ImageEditor:
         self.size_of_orig = None
         self.return_image_back = None
 
+        if self.chart.get_image() and os.path.exists(self.chart.get_image()+'/original.png'):
+            self.load_image_from_file()
+
     def load_image(self):
         clipboard_image = ImageGrab.grabclipboard()
         if clipboard_image:
@@ -131,9 +129,9 @@ class ImageEditor:
                         self.WIDTH = int(self.WIDTH * self.scale_factor)
                         self.HEIGHT = int(self.HEIGHT * self.scale_factor)
                         self.image = self.image.resize((self.WIDTH, self.HEIGHT))
-                        
-                        self.show_image()
+
                         self.image = self.image
+                self.show_image()
                     
                         
             ## wight- 1620  *  height -  2160
@@ -144,9 +142,40 @@ class ImageEditor:
         else:
             messagebox.showerror("Ошибка", "Нет изображения в буфере обмена")
 
+    def load_image_from_file(self):
+        image = self.chart.get_image()+"/original.png"
+        image = Image.open(self.chart.get_image()+"/original.png")
+        if image:
+            self.image = image
+            self.default_image = self.image
+            self.size_of_orig = self.image
+            self.WIDTH = self.image.width
+            self.HEIGHT = self.image.height
+
+            if self.WIDTH <= 600 and self.HEIGHT <= 600:
+                self.show_image()
+                self.image = self.image
+            else:
+                while self.WIDTH >= 600 or self.HEIGHT >= 600:
+                    self.scale_factor = 0.9
+                    self.WIDTH = int(self.WIDTH * self.scale_factor)
+                    self.HEIGHT = int(self.HEIGHT * self.scale_factor)
+                    self.image = self.image.resize((self.WIDTH, self.HEIGHT))
+
+                    self.image = self.image
+                self.show_image()
+
+            ## wight- 1620  *  height -  2160
+            self.orig_image_for_scale = self.image
+            self.size_of_orig = self.image
+            self.return_image_back = self.image
+        image.close()
+
     def show_image(self):
         self.canvas.delete("all")
         self.tk_image = ImageTk.PhotoImage(self.image)
+        self.canvas.configure(width=self.tk_image.width(), height=self.tk_image.height())
+        self.smw.root.update()
         self.canvas.create_image(self.canvas.winfo_width()//2, self.canvas.winfo_height()//2, image=self.tk_image, anchor=tk.CENTER)
 
 
@@ -203,7 +232,7 @@ class ImageEditor:
             self.show_image()
             self.update_undo_redo_buttons()
 
-            if self.image.width < 200 or self.image.height < 150:
+            if self.image.width < 100 or self.image.height < 75:
                 messagebox.showinfo("Внимание", "Выделенная область для обрезки слишком мала! Выделите еще раз")
                 self.image = self.return_image_back
                 self.show_image()
@@ -320,7 +349,7 @@ class ImageEditor:
             self.show_image()
             self.update_undo_redo_buttons()
 
-            if self.image.width < 200 or self.image.height < 150:
+            if self.image.width < 100 or self.image.height < 75:
                 messagebox.showinfo("Внимание", "Выделенная область для обрезки слишком мала! Выделите еще раз")
                 self.image = self.return_image_back
                 self.show_image()

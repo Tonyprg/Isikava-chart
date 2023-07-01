@@ -28,14 +28,12 @@ class ChartsEditPageWindow:
             self.left_frame.pack(anchor=tkinter.W, side=tkinter.LEFT, fill=tkinter.BOTH, expand=True)
 
             self.chart = tree.Chart(self.left_frame, chart_name)
-            self.chart.read_file('charts\\' + self.chart_name)
-
-
-            if files.get_settings() and 'chart_style' in files.get_settings().keys():
-                chart_style = files.get_settings()['chart_style']
+            if os.path.exists('charts/' + self.chart_name):
+                self.chart.read_file('charts/' + self.chart_name)
             else:
-                chart_style = 'default'
-            self.chart.set_style(chart_style)
+                file = open('charts/' + self.chart_name, "w")
+                file.close()
+                self.chart.write_file('charts/' + self.chart_name)
 
             self.back_button = ttk.Button(self.left_frame, text=self.language.get_text('back'), command=self.back, style="Btn.TButton")
             self.back_button.pack(side=tkinter.LEFT, anchor="sw", padx=10, pady=10)
@@ -83,7 +81,7 @@ class ChartsEditPageWindow:
             self.chart_frame.pack(fill=tkinter.BOTH, padx=10, pady=10)
 
             self.add_node_button = ttk.Button(self.chart_frame, text=self.language.get_text('add_node'),
-                                              command=self.chart.append_node, style="Btn.TButton")
+                                              command=self.add_node, style="Btn.TButton")
             self.add_node_button.pack(padx=10, pady=10)
 
             self.del_node_button = ttk.Button(self.chart_frame, text=self.language.get_text('del_node'),
@@ -94,11 +92,16 @@ class ChartsEditPageWindow:
                                                 command=self.style_edit, style="Btn.TButton")
             self.style_edit_button.pack(padx=10, pady=10)
 
+        def add_node(self):
+            self.chart.append_node()
+            self.chart.write_file('charts/' + self.chart_name)
+
         def remove_node(self):
             for i in self.chart.mark:
                 if i.data.image and os.path.exists(i.data.image):
                     shutil.rmtree(i.data.image)
             self.chart.remove_node()
+            self.chart.write_file('charts/' + self.chart_name)
 
         def style_edit(self):
             self.local_stack.push()
@@ -121,6 +124,7 @@ class ChartsEditPageWindow:
 
             self.chart_select = []
             onlyfiles = [f for f in listdir('style') if isfile(join('style', f))]
+            onlyfiles.sort()
             for element in onlyfiles:
                 if element:
                     self.chart_selection_list.insert("", len(self.chart_select), text=element)
@@ -135,15 +139,9 @@ class ChartsEditPageWindow:
 
         def set_style(self, event):
             chart_style = self.chart_selection_list.item(self.chart_selection_list.focus())
-            if chart_style['text']:
+            if chart_style['text'] and os.path.exists('style/'+chart_style['text']):
                 chart_style = chart_style['text']
                 self.chart.set_style(chart_style)
-                settings = files.get_settings()
-                if not settings:
-                    settings = dict()
-                if chart_style not in settings.keys():
-                    settings['chart_style'] = chart_style
-                files.save_settings(settings)
 
 
         def head_edit(self):
@@ -186,6 +184,7 @@ class ChartsEditPageWindow:
             self.chart.field.canvas.unbind("<Double-ButtonPress-3>")
             image = image_editor.ImageEditor(self.local_stack.get(), self.local_stack, self.style, self.chart, self.language)
             image.save_button.configure(command=lambda: self.save_image(image))
+            image.back_button.configure(command=lambda: self.back_image(image))
 
         def date_edit(self):
             self.local_stack.push()
@@ -249,6 +248,10 @@ class ChartsEditPageWindow:
             self.chart.field.canvas.bind("<Double-ButtonPress-1>", self.chart.double_click_left)
             self.chart.field.canvas.bind("<Double-ButtonPress-3>", self.chart.double_click_right)
 
+        def back_image(self, edit):
+            self.local_stack.pop()
+            self.chart.field.canvas.bind("<Double-ButtonPress-1>", self.chart.double_click_left)
+            self.chart.field.canvas.bind("<Double-ButtonPress-3>", self.chart.double_click_right)
 
         def save_date(self, edit):
             edit.back()
